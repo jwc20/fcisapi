@@ -2,11 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 import time
 
+BASE_URL = "https://www.osha.gov"
 HEADERS = {"Content-Type": "text/html; charset=UTF-8"}
 
-BASE_URL = "https://www.osha.gov"
+# Search Results URLs
 SEARCH_URL = "/pls/imis/AccidentSearch.search"
-SIC_SEARCH_URL = "/data/sic-search"
 
 ACCOUNT_DESCRIPTION_URL = "acc_description="
 ACCOUNT_ABSTRACT_URL = "acc_Abstract="
@@ -27,3 +27,9 @@ START_DAY_URL = "startday="
 START_YEAR_URL = "startyear="
 
 INSPECTION_NUMBER_URL = "InspNr="
+
+# SIC Search Result URLs
+SIC_SEARCH_URL = "/data/sic-search"
+
+SIC_NUMBER_VALUE_URL = "field_sic_number_value="
+SIC_KEYWORDS_URL = "title_and_body="
