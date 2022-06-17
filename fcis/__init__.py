@@ -1,7 +1,7 @@
 from .core import *
-from .results import Results
-from .accident import Accident
-from .inspection import Inspection
+from .results import Results # Search Results
+from .accident import Accident # Accident Details 
+from .inspection import Inspection # Inspection Details
 from .sic import SIC # Standard Industrial Classification
 
 
