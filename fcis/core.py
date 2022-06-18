@@ -45,7 +45,7 @@ PAGE_FINISH_URL = "p_finish" # Returns results starting at the index input (it s
 PAGE_SORT_URL = "p_sort" # This doen't work
 PAGE_DESC_URL = "p_desc" # ASC or DESC (it should be renamed to p_order)
 PAGE_DIRECTION_URL = "p_direction"
-PAGE_SHOW_URL = "p_show"
+PAGE_SHOW_URL = "p_show" # The range
 
 
 # SIC Search Result URLs
