@@ -4,12 +4,25 @@ from .core import *
 class Accidents(object):
     def __init__(self, keywords=[], *args):
         self.keywords = keywords
+    
 
     def _make_accidents_search_url(self):
         return
 
     def _load_accidents_search_page(self):
-        return
+        r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL)
+        html = r.text
+        return BeautifulSoup(html, "lxml")
+
+    def _load_accidents_keywords_page(self, first_letter):
+        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + self.first_letter )
+        html = r.text
+        return BeautifulSoup(html, "lxml")
+
+    # def _load_accidents_search_form_page(self):
+    #     r = requests.get(BASE_URL + ACCIDENT_SEARCH_FORM_URL)
+    #     html = r.text
+    #     return BeautifulSoup(html, "lxml")
 
     def _extract_accidents_0(self):
         return
@@ -23,5 +36,11 @@ class Accidents(object):
     def _transform_accidents(self):
         return
 
+    def get_keywords(self, first_letter):
+        page = _load_accidents_keywords_page(first_letter)
+        return 
+
     def get_accidents(self):
         return
+
+
