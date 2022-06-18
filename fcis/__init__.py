@@ -7,8 +7,8 @@ from .sic import SIC  # Standard Industrial Classification
 
 # Fatalities and Catastrophies Investigation Summaries
 class FCIS(Accidents, AccidentDetail, InspectionDetail, SIC):
-    def __init__(self, descriptions=[], abstracts=[], keywords=[], *args):
-        Accidents.__init__(self, descriptions=descriptions, abstracts=abstracts, keywords=keywords, **kwargs)
+    def __init__(self, descriptions=[], abstracts=[], keywords=[], *args, **kwargs):
+        Accidents.__init__(self, descriptions, abstracts, keywords, *args, **kwargs)
         AccidentDetail.__init__(self, *args)
         InspectionDetail.__init__(self, *args)
         SIC.__init__(self, keywords=keywords, *args)
