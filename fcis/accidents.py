@@ -12,15 +12,16 @@ class Accidents(object):
         Validates a list of words to see if they are in the keyword list and returns a new list.
         """
         search_keyword_list = []
+        not_keyword_list = []
         for word in words:
             if word.lower() in self._get_keywords(word[0]):
                 search_keyword_list.append(word)
+            else:
+                not_keyword_list.append(word)
+        print(not_keyword_list)
         return search_keyword_list
 
     def _make_accidents_search_url(self, starting_at, _range):
-        # +descriptions
-        # +abstracts
-        # +keywrods
 
         payload = {}
 
@@ -52,29 +53,6 @@ class Accidents(object):
 
         return payload
 
-    def _load_accidents_search_page(self, starting_at=None, _range=None):
-
-        search_url = BASE_URL + ACCIDENT_SEARCH_URL
-
-        payload_str = urlencode(
-            self._make_accidents_search_url(starting_at, _range), safe="+"
-        )
-        print(search_url)
-        print(payload_str)
-
-        r = requests.get(
-            search_url,
-            params=payload_str,
-            headers=HEADERS,
-        )
-
-        # print(search_url)
-        # r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL, params)
-        html = r.text
-        print(html)
-        # return BeautifulSoup(html, "lxml")
-        return
-
     def _load_accidents_keywords_page(self, first_letter):
         """
         For loading the list of keywords page by letters.
@@ -83,8 +61,60 @@ class Accidents(object):
         html = r.text
         return BeautifulSoup(html, "lxml")
 
-    def _extract_accidents_0(self):
-        return
+    def _load_accidents_search_page(self, starting_at=None, _range=None):
+
+        search_url = BASE_URL + ACCIDENT_SEARCH_URL
+
+        payload_str = urlencode(
+            self._make_accidents_search_url(starting_at, _range), safe="+"
+        )
+
+        r = requests.get(
+            search_url,
+            params=payload_str,
+            headers=HEADERS,
+        )
+
+        html = r.text
+        return BeautifulSoup(html, "lxml")
+
+    def _extract_accidents_search_results(self, soup_data):
+        """
+        Number of results
+        Summary Nr
+        Event Date
+        Report ID
+        Fat
+        SIC
+        Event Description
+        """
+        '''
+        data = {
+            "accident_id": None,
+            "summary_url": None,
+            "summary_nr": None,
+            "event_date": None,
+            "report_id": None,
+            "fatality": None,
+            "sic_num": None,
+            "event_description": None,
+        }
+        '''
+        data = {}
+        table = soup_data.find_all("table", {"class": "table table-bordered table-striped"})[1]
+        # print(table)
+        table_rows = table.find_all("tr")
+
+        for tr in table_rows[1:]:
+            print(tr)
+            # table_data = tr.find_all("td")
+            # for td in Vtable_data:
+            # data["accident_id"] = tr.find("td", {"value"}).text 
+            # data["summary_url"] = tr.find("td", {})
+            data["accident_id"] = tr.find_all("td")[1]
+
+
+        return data
 
     def _extract_accidents_1(self):
         return
