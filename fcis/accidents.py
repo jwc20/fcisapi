@@ -2,7 +2,9 @@ from .core import *
 
 
 class Accidents(object):
-    def __init__(self, keywords=[], *args):
+    def __init__(self, descriptions=[], abstracts=[], keywords=[], *args):
+        self.descriptions = descriptions
+        self.abstracts = abstracts
         self.keywords = keywords
 
     def _get_validated_keywords(self, words):
@@ -11,20 +13,39 @@ class Accidents(object):
         """
         search_keyword_list = []
         for word in words:
-            if (word.lower() in self._get_keywords(word[0])):
+            if word.lower() in self._get_keywords(word[0]):
                 search_keyword_list.append(word)
         return search_keyword_list
 
     def _make_accidents_search_url(self):
-        payload = dict()
+        # +descriptions
+        # +abstracts
+        # +keywrods
+
+        payload = {}
+
+        if self.descriptions:
+            payload[ACCIDENT_DESCRIPTION_URL] = ""
+            for item in self.descriptions:
+                payload[ACCIDENT_DESCRIPTION_URL] += item + " "
+
+        if self.abstracts:
+            payload[ACCIDENT_ABSTRACT_URL] = ""
+            for item in self.abstracts:
+                payload[ACCIDENT_ABSTRACT_URL] += item + " "
+
         if self.keywords:
-            payload[ACCIDENT_KEYWORD_LETTER_URL] = ""
+            payload[ACCIDENT_KEYWORD_URL] = ""
             for item in self.keywords:
-                if (item == "fatal" or item == "Fatal"):
-                    payload[ACCIDENT_FATAL_URL] = "fatal"
+                payload[ACCIDENT_KEYWORD_URL] += item + " "
+            #     if item == "fatal" or item == "Fatal":
+            #         payload[ACCIDENT_FATAL_URL] = "fatal"
+            #     else:
+            #         payload[ACCIDENT_FATAL_URL] += item + " "
 
+        # payload[page] = page_num
 
-        return
+        return payload
 
     def _load_accidents_search_page(self):
         r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL)
