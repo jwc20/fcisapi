@@ -7,11 +7,14 @@ HEADERS = {"Content-Type": "text/html; charset=UTF-8"}
 ID_URL = "id="
 
 # Accident Search Results URLs
+ACCIDENT_SEARCH_FORM_URL = "/pls/imis/accidentsearch.html"
 ACCIDENT_SEARCH_URL = "/pls/imis/AccidentSearch.search"
 
 ACCIDENT_DESCRIPTION_URL = "acc_description="
 ACCIDENT_ABSTRACT_URL = "acc_Abstract="
-ACCIDENT_KEYWORD = "acc_keyword="
+ACCIDENT_KEYWORD_URL = "acc_keyword="
+
+ACCIDENT_KEYWORD_LETTER_URL = "/pls/imis/accidentsearch.display_keyword?v_keywordletter=" 
 
 ACCIDENT_SIC_URL = "sic="
 ACCIDENT_NAICS_URL = "naics="
@@ -51,7 +54,7 @@ SIC_DETAILS_URL = "/sic-manual"
 # Note: multiple details url can be fetched via id's
 # EX: https://www.osha.gov/pls/imis/accidentsearch.accident_detail?id=128574.015&id=108256.015
 # Accident Details URLs (uses id)
-ACCIDENT_DETAILS_URL = "pls/imis/accidentsearch.accident_detail"
+ACCIDENT_DETAILS_URL = "/pls/imis/accidentsearch.accident_detail"
 
 # Inspection URLs (uses id)
 INSPECTION_DETAILS_URL = "/pls/imis/establishment.inspection_detail"
