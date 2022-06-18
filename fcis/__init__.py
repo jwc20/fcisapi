@@ -1,16 +1,16 @@
 from .core import *
-from .results import Results # Search Results
-from .accident import Accident # Accident Details 
-from .inspection import Inspection # Inspection Details
+from .accidents import Accidents # Search Accident Results
+from .accident_detail import AccidentDetail # Accident Details 
+from .inspection_detail import InspectionDetail # Inspection Details
 from .sic import SIC # Standard Industrial Classification
 
 
 # Fatalities and Catastrophies Investigation Summaries
-class FCIS(Results, Accident, Inspection, Sic):
+class FCIS(Accidents, AccidentDetails InspectionDetails, Sic):
     def __init__(self, keywords=[], *args):
-        Results.__init__(self, keywords=keywords, *args)
-        Accident.__init__(self, keywords=keywords, *args)
-        Inspection.__init__(self, *args)
+        Accidents.__init__(self, keywords=keywords, *args)
+        AccidentDetails.__init__(self, keywords=keywords, *args)
+        InspectionDetails.__init__(self, *args)
         SIC.__init__(self, keywords=keywords, *args)
 
 
