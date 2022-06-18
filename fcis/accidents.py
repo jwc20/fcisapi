@@ -46,32 +46,32 @@ class Accidents(object):
 
         if starting_at:
             payload[PAGE_FINISH_URL] = starting_at
-        print(urlencode(payload, safe="+"))
-        print(payload)
 
-        return urlencode(payload, safe="+")
+        if _range:
+            payload[PAGE_SHOW_URL] = _range
+
+        return payload
 
     def _load_accidents_search_page(self, starting_at=None, _range=None):
 
-        search_url = BASE_URL + ACCIDENT_SEARCH_URL + "?"
-        if self.descriptions:
-            search_url += ACCIDENT_DESCRIPTION_URL
+        search_url = BASE_URL + ACCIDENT_SEARCH_URL
 
-        if self.abstracts:
-            search_url += ACCIDENT_ABSTRACT_URL
-
-        if self.keywords:
-            search_url += ACCIDENT_KEYWORD_URL
+        payload_str = urlencode(
+            self._make_accidents_search_url(starting_at, _range), safe="+"
+        )
+        print(search_url)
+        print(payload_str)
 
         r = requests.get(
             search_url,
-            params=self._make_accidents_search_url(starting_at, _range),
+            params=payload_str,
             headers=HEADERS,
         )
 
         # print(search_url)
         # r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL, params)
         html = r.text
+        print(html)
         # return BeautifulSoup(html, "lxml")
         return
 
