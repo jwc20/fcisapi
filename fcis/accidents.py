@@ -15,7 +15,7 @@ class Accidents(object):
         return BeautifulSoup(html, "lxml")
 
     def _load_accidents_keywords_page(self, first_letter):
-        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + self.first_letter )
+        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + first_letter )
         html = r.text
         return BeautifulSoup(html, "lxml")
 
@@ -37,8 +37,9 @@ class Accidents(object):
         return
 
     def get_keywords(self, first_letter):
-        page = _load_accidents_keywords_page(first_letter)
-        return 
+        # TODO: add validator
+        page = self._load_accidents_keywords_page(first_letter)
+        return page
 
     def get_accidents(self):
         return

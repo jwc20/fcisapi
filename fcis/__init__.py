@@ -9,7 +9,7 @@ from .sic import SIC  # Standard Industrial Classification
 class FCIS(Accidents, AccidentDetail, InspectionDetail, SIC):
     def __init__(self, keywords=[], *args):
         Accidents.__init__(self, keywords=keywords, *args)
-        AccidentDetail.__init__(self, keywords=keywords, *args)
+        AccidentDetail.__init__(self, *args)
         InspectionDetail.__init__(self, *args)
         SIC.__init__(self, keywords=keywords, *args)
 
