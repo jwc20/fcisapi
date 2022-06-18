@@ -5,17 +5,15 @@ class Accidents(object):
     def __init__(self, keywords=[], *args):
         self.keywords = keywords
 
-    def is_a_keyword(keywords):
+    def is_keyword(self, words):
         """
         Validates a list of words to see if they are in the keyword list
         """
-        for keyword in keywords:
-            if (keyword in self.get_keywords(keyword[0])):
-                return True
-            else:
-                return False
-
-        return
+        search_keyword_list = []
+        for word in words:
+            if (word.lower() in self.get_keywords(word[0])):
+                search_keyword_list.append(word)
+        return search_keyword_list
 
     def _make_accidents_search_url(self):
         return
@@ -56,11 +54,9 @@ class Accidents(object):
         else:
             keyword_list = []
             page = self._load_accidents_keywords_page(first_letter)
-            # TODO: scrape the keywords
-            # must return a list
             a_hrefs = page.find("div", {"class": "well"}).find_all("a")
             for a_href in a_hrefs:
-                keyword_list.append(a_href.text)
+                keyword_list.append(a_href.text.lower())
             return keyword_list
 
     def get_accidents(self):
