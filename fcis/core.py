@@ -84,6 +84,7 @@ def is_sic_detail(url):
     return True if SIC_DETAILS_URL in url else False
 
 
+'''
 # Accident Search
 def get_keywords():
     return
@@ -92,3 +93,4 @@ def get_keywords():
 # Sic Search
 def get_sic_keywords():
     return
+'''
