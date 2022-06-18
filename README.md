@@ -6,6 +6,8 @@ Unofficial API for Fatality and Catastrophe Investigation Summaries
 
 [Accident Investigation Search Help](https://www.osha.gov/help/accident-investigation)
 
+Note: Abstract was used as Description for older reports.
+
 ## Information:
 
 ### Search Results:
