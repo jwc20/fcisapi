@@ -5,17 +5,25 @@ class Accidents(object):
     def __init__(self, keywords=[], *args):
         self.keywords = keywords
 
-    def is_keyword(self, words):
+    def _get_validated_keywords(self, words):
         """
-        Validates a list of words to see if they are in the keyword list
+        Validates a list of words to see if they are in the keyword list and returns a new list.
         """
         search_keyword_list = []
         for word in words:
-            if (word.lower() in self.get_keywords(word[0])):
+            if (word.lower() in self._get_keywords(word[0])):
                 search_keyword_list.append(word)
         return search_keyword_list
 
     def _make_accidents_search_url(self):
+        payload = dict()
+        if self.keywords:
+            payload[ACCIDENT_KEYWORD_LETTER_URL] = ""
+            for item in self.keywords:
+                if (item == "fatal" or item == "Fatal"):
+                    payload[ACCIDENT_FATAL_URL] = "fatal"
+
+
         return
 
     def _load_accidents_search_page(self):
@@ -48,7 +56,7 @@ class Accidents(object):
     def _transform_accidents(self):
         return
 
-    def get_keywords(self, first_letter):
+    def _get_keywords(self, first_letter):
         if len(first_letter) != 1:
             print("Must input a letter.")
         else:
