@@ -17,7 +17,7 @@ class Accidents(object):
                 search_keyword_list.append(word)
         return search_keyword_list
 
-    def _make_accidents_search_url(self):
+    def _make_accidents_search_url(self, starting_at, _range):
         # +descriptions
         # +abstracts
         # +keywrods
@@ -28,29 +28,52 @@ class Accidents(object):
             payload[ACCIDENT_DESCRIPTION_URL] = ""
             for item in self.descriptions:
                 payload[ACCIDENT_DESCRIPTION_URL] += item + " "
+            payload[ACCIDENT_DESCRIPTION_URL] = payload[
+                ACCIDENT_DESCRIPTION_URL
+            ].strip()
 
         if self.abstracts:
             payload[ACCIDENT_ABSTRACT_URL] = ""
             for item in self.abstracts:
                 payload[ACCIDENT_ABSTRACT_URL] += item + " "
+            payload[ACCIDENT_ABSTRACT_URL] = payload[ACCIDENT_ABSTRACT_URL].strip()
 
         if self.keywords:
             payload[ACCIDENT_KEYWORD_URL] = ""
             for item in self.keywords:
                 payload[ACCIDENT_KEYWORD_URL] += item + " "
-            #     if item == "fatal" or item == "Fatal":
-            #         payload[ACCIDENT_FATAL_URL] = "fatal"
-            #     else:
-            #         payload[ACCIDENT_FATAL_URL] += item + " "
+            payload[ACCIDENT_KEYWORD_URL] = payload[ACCIDENT_KEYWORD_URL].strip()
 
-        # payload[page] = page_num
+        if starting_at:
+            payload[PAGE_FINISH_URL] = starting_at
+        print(urlencode(payload, safe="+"))
+        print(payload)
 
-        return payload
+        return urlencode(payload, safe="+")
 
-    def _load_accidents_search_page(self):
-        r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL)
+    def _load_accidents_search_page(self, starting_at=None, _range=None):
+
+        search_url = BASE_URL + ACCIDENT_SEARCH_URL + "?"
+        if self.descriptions:
+            search_url += ACCIDENT_DESCRIPTION_URL
+
+        if self.abstracts:
+            search_url += ACCIDENT_ABSTRACT_URL
+
+        if self.keywords:
+            search_url += ACCIDENT_KEYWORD_URL
+
+        r = requests.get(
+            search_url,
+            params=self._make_accidents_search_url(starting_at, _range),
+            headers=HEADERS,
+        )
+
+        # print(search_url)
+        # r = requests.get(BASE_URL + ACCIDENT_SEARCH_URL, params)
         html = r.text
-        return BeautifulSoup(html, "lxml")
+        # return BeautifulSoup(html, "lxml")
+        return
 
     def _load_accidents_keywords_page(self, first_letter):
         """
@@ -59,11 +82,6 @@ class Accidents(object):
         r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + first_letter)
         html = r.text
         return BeautifulSoup(html, "lxml")
-
-    # def _load_accidents_search_form_page(self):
-    #     r = requests.get(BASE_URL + ACCIDENT_SEARCH_FORM_URL)
-    #     html = r.text
-    #     return BeautifulSoup(html, "lxml")
 
     def _extract_accidents_0(self):
         return
