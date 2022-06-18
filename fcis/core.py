@@ -29,6 +29,14 @@ ACCIDENT_START_YEAR_URL = "startyear="
 
 INSPECTION_NUMBER_URL = "InspNr="
 
+# Page urls must be all present in the url to work
+PAGE_START_URL = "p_start="
+Page_FINISH_URL = "p_finish="
+PAGE_SORT_URL = "p_sort="
+PAGE_DESC_URL = "p_desc="
+PAGE_DIRECTION_URL = "p_direction="
+PAGE_SHOW_URL = "p_show="
+
 
 # SIC Search Result URLs
 SIC_SEARCH_URL = "/data/sic-search"
@@ -84,7 +92,7 @@ def is_sic_detail(url):
     return True if SIC_DETAILS_URL in url else False
 
 
-'''
+"""
 # Accident Search
 def get_keywords():
     return
@@ -93,4 +101,4 @@ def get_keywords():
 # Sic Search
 def get_sic_keywords():
     return
-'''
+"""
