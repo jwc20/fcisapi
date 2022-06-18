@@ -4,7 +4,6 @@ from .core import *
 class Accidents(object):
     def __init__(self, keywords=[], *args):
         self.keywords = keywords
-    
 
     def _make_accidents_search_url(self):
         return
@@ -15,7 +14,7 @@ class Accidents(object):
         return BeautifulSoup(html, "lxml")
 
     def _load_accidents_keywords_page(self, first_letter):
-        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + first_letter )
+        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + first_letter)
         html = r.text
         return BeautifulSoup(html, "lxml")
 
@@ -37,11 +36,12 @@ class Accidents(object):
         return
 
     def get_keywords(self, first_letter):
-        # TODO: add validator
-        page = self._load_accidents_keywords_page(first_letter)
-        return page
+        if len(first_letter) != 1:
+            print("Must input a letter.")
+        else:
+            page = self._load_accidents_keywords_page(first_letter)
+            # TODO: scrape the keywords
+            return page
 
     def get_accidents(self):
         return
-
-
