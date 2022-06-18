@@ -30,6 +30,8 @@ ACCIDENT_START_MONTH_URL = "startmonth="
 ACCIDENT_START_DAY_URL = "startday="
 ACCIDENT_START_YEAR_URL = "startyear="
 
+ACCIDENT_FATAL_URL = "Fatal=fatal"
+
 INSPECTION_NUMBER_URL = "InspNr="
 
 # Page urls must be all present in the url to work
