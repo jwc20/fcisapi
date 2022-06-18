@@ -32,7 +32,7 @@ ACCIDENT_START_MONTH_URL = "startmonth="
 ACCIDENT_START_DAY_URL = "startday="
 ACCIDENT_START_YEAR_URL = "startyear="
 
-ACCIDENT_FATAL_URL = "Fatal=fatal"
+ACCIDENT_FATAL_URL = "Fatal="
 
 INSPECTION_NUMBER_URL = "InspNr="
 
