@@ -88,7 +88,6 @@ class Accidents(object):
         SIC
         Event Description
         """
-        """
         data = {
             "accident_id": None,
             "summary_url": None,
@@ -96,13 +95,12 @@ class Accidents(object):
             "event_date": None,
             "report_id": None,
             "fatality": None,
-            "sic_url"
+            "sic_url": None,
             "sic_num": None,
             "event_description": None,
         }
-        """
         results = []
-        data = {}
+        # data = {}
         table = soup_data.find_all(
             "table", {"class": "table table-bordered table-striped"}
         )[1]
@@ -130,6 +128,10 @@ class Accidents(object):
         return
 
     def _transform_accidents(self):
+        # clean some scraped results
+        # Examples:
+        # 'sic_url': 'sic_manual.display?id=&tab=description',
+        # 'sic_num': ''
         return
 
     def _get_keywords(self, first_letter):
