@@ -132,6 +132,7 @@ class Accidents(object):
         # Examples:
         # 'sic_url': 'sic_manual.display?id=&tab=description',
         # 'sic_num': ''
+        # 'fatility': 'X'
         return
 
     def _get_keywords(self, first_letter):
