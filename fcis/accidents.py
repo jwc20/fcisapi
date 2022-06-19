@@ -1,5 +1,6 @@
 from .core import *
 
+import urllib.parse
 
 class Accidents(object):
     def __init__(self, descriptions=[], abstracts=[], keywords=[], *args):
@@ -15,10 +16,11 @@ class Accidents(object):
         not_keyword_list = []
         for word in words:
             if word.lower() in self._get_keywords(word[0]):
+                # print(word)
                 search_keyword_list.append(word)
             else:
                 not_keyword_list.append(word)
-        print(not_keyword_list)
+        # print(not_keyword_list)
         return search_keyword_list
 
     def _make_accidents_search_url(self, starting_at, _range):
@@ -40,8 +42,9 @@ class Accidents(object):
             payload[ACCIDENT_ABSTRACT_URL] = payload[ACCIDENT_ABSTRACT_URL].strip()
 
         if self.keywords:
+            existing_keywords = self._get_validated_keywords(self.keywords)
             payload[ACCIDENT_KEYWORD_URL] = ""
-            for item in self.keywords:
+            for item in existing_keywords:
                 payload[ACCIDENT_KEYWORD_URL] += item + " "
             payload[ACCIDENT_KEYWORD_URL] = payload[ACCIDENT_KEYWORD_URL].strip()
 
@@ -50,6 +53,8 @@ class Accidents(object):
 
         if _range:
             payload[PAGE_SHOW_URL] = _range
+        
+        
 
         return payload
 
@@ -57,11 +62,15 @@ class Accidents(object):
         """
         For loading the list of keywords page by letters.
         """
-        r = requests.get(BASE_URL + ACCIDENT_KEYWORD_LETTER_URL + first_letter)
+        # print(first_letter)
+        search_url = BASE_URL + ACCIDENT_KEYWORD_LETTER_URL 
+        r = requests.get(search_url + "=" + first_letter, headers=HEADERS)
+        # print(r.url)
         html = r.text
         return BeautifulSoup(html, "lxml")
 
     def _load_accidents_search_page(self, starting_at=None, _range=None):
+        
 
         search_url = BASE_URL + ACCIDENT_SEARCH_URL
 
@@ -75,11 +84,28 @@ class Accidents(object):
             params=payload_str,
             headers=HEADERS,
         )
-        print(r.url)
+        # print(r.url)
+        
 
+        # If there is only one keyword and the site form can not fetch, go to the list of keywords and fetch from there.
         if is_accident_search(r.url):
             html = r.text
             return BeautifulSoup(html, "lxml")
+        # print(self._get_validated_keywords(self.keywords))
+        # print(is_accident_search(r.url))
+        if len(self._get_validated_keywords(self.keywords)) == 1 and not is_accident_search(r.url):
+            keyword_search_url = BASE_URL + ACCIDENT_SEARCH_URL
+            keyword_url = self._get_validated_keywords(self.keywords)[0].replace(" ", "%20")
+            # print(keyword_url)
+            keyword_payload_str = keyword_search_url + "?"   + ACCIDENT_KEYWORD_URL + "=" + '"' + keyword_url + '"' + ACCIDENT_KEYWORD_LIST_URL
+            print(keyword_payload_str)
+            keyword_r = requests.get(keyword_payload_str, headers=HEADERS)
+            keyword_html = keyword_r.text
+            # print(keyword_html)
+            return BeautifulSoup(keyword_html, "lxml")
+        
+        
+        
         else:
             print("Your search did not return any result.")
             pass
@@ -133,11 +159,10 @@ class Accidents(object):
 
             return self._transform_accidents_search_results(results)
 
-    def _extract_accidents_1(self):
+    # arguments can be id, url,
+    def _scrape_accident_details(self):
         return
 
-    def _extract_accidents_2(self):
-        return
 
     def _transform_accidents_search_results(self, results):
         # clean some scraped results
