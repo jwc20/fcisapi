@@ -1,6 +1,14 @@
 from .core import *
 
-import unicodedata
+# import unicodedata
+
+
+def DictListUpdate(lis1, lis2):
+    for aLis1 in lis1:
+        if aLis1 not in lis2:
+            lis2.append(aLis1)
+    return lis2
+
 
 def remove_non_printable_ascii(s):
     return "".join([c if 32 < ord(c) < 127 else None for c in s])
@@ -143,7 +151,7 @@ class Accidents(object):
                 "report_id": None,
                 "fatality": "",
                 "sic_url": None,
-                "sic_num": None,
+                "sic_number": None,
                 "event_description": None,
             }
             data["accident_id"] = tr.find_all("td")[0].input.get("value")
@@ -154,7 +162,7 @@ class Accidents(object):
             data["event_date"] = tr.find_all("td")[3].text
             data["report_id"] = tr.find_all("td")[4].text
             data["fatility"] = tr.find_all("td")[5].text
-            data["sic_num"] = tr.find_all("td")[6].text
+            data["sic_number"] = tr.find_all("td")[6].text
             data["sic_url"] = (
                 BASE_URL + SIC_DETAILS_URL + "/" + tr.find_all("td")[6].text
             )
@@ -165,7 +173,32 @@ class Accidents(object):
         return self._transform_accidents_search_results(results)
 
     # arguments can be id, url,
-    def _scrape_accident_details(self):
+    def _scrape_accident_details(self, soup_data):
+        details = []
+        """
+        accident_number
+        event_description
+        report_id
+        event_date
+        inpection_number 
+        open_date
+        sic_number 
+        establishment_name
+        detail_description
+        keywords
+        
+        employee = {
+            employee_number
+            inpection_number
+            age
+            sex
+            degree
+            nature
+            occupation
+        }
+        
+        """
+
         return
 
     def _transform_accidents_search_results(self, results):
@@ -178,17 +211,15 @@ class Accidents(object):
                 or data["sic_url"] == "https://www.osha.gov/sic-manual/"
             ):
                 data["sic_url"] = None
-            if data["sic_num"] == "":
-                data["sic_num"] = None
- 
-            
+            if data["sic_number"] == "":
+                data["sic_number"] = None
+
             # TODO: /xa0 not utf-8, fix this later.
             if data["fatality"] != "X":
                 # data["fatality"].replace(u'\xa0', u'')
                 data["fatality"] = None
             new_results.append(data)
-            # print(data)
-            # print(data)
+
         return new_results
 
     def _get_keywords(self, first_letter):
@@ -202,11 +233,8 @@ class Accidents(object):
                 keyword_list.append(a_href.text.lower())
             return keyword_list
 
-    def DictListUpdate(lis1, lis2):
-        for aLis1 in lis1:
-            if aLis1 not in lis2:
-                lis2.append(aLis1)
-        return lis2
-
     def get_accidents(self):
+        return
+
+    def get_accident_details(self):
         return
