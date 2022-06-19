@@ -68,6 +68,7 @@ class Accidents(object):
         payload_str = urlencode(
             self._make_accidents_search_url(starting_at, _range), safe="+"
         )
+        print(payload_str)
 
         r = requests.get(
             search_url,
@@ -78,7 +79,7 @@ class Accidents(object):
         html = r.text
         return BeautifulSoup(html, "lxml")
 
-    def _extract_accidents_search_results(self, soup_data):
+    def _scrape_accidents_search_results(self, soup_data):
         """
         Number of results
         Summary Nr
@@ -88,6 +89,8 @@ class Accidents(object):
         SIC
         Event Description
         """
+        
+
         data = {
             "accident_id": None,
             "summary_url": None,
@@ -119,7 +122,7 @@ class Accidents(object):
             data["event_description"] = tr.find_all("td")[7].text
             results.append(data)
 
-        return results
+        return self._transform_accidents_search_results(results)
 
     def _extract_accidents_1(self):
         return
@@ -127,13 +130,23 @@ class Accidents(object):
     def _extract_accidents_2(self):
         return
 
-    def _transform_accidents(self):
+    def _transform_accidents_search_results(self, results):
         # clean some scraped results
         # Examples:
         # 'sic_url': 'sic_manual.display?id=&tab=description',
         # 'sic_num': ''
         # 'fatility': 'X'
-        return
+        new_results = []
+
+        for data in results: 
+            if data["sic_url"] == 'sic_manual.display?id=&tab=description':
+                data["sic_url"] = None
+            if data["sic_num"] == "":
+                data["sic_num"] = None
+            if data["fatality"] != "X":
+                data["fatality"] = None
+            new_results.append(data)
+        return new_results 
 
     def _get_keywords(self, first_letter):
         if len(first_letter) != 1:
