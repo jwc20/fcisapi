@@ -80,7 +80,9 @@ class Accidents(object):
         if is_accident_search(r.url):
             html = r.text
             return BeautifulSoup(html, "lxml")
-
+        else:
+            print("Your search did not return any result.")
+            pass
 
     def _scrape_accidents_search_results(self, soup_data):
         """
@@ -94,9 +96,10 @@ class Accidents(object):
         """
 
         if not soup_data:
-            print("Your search did not return any result.")
+            return
 
-        else:        
+        else:
+
             data = {
                 "accident_id": None,
                 "summary_url": None,
@@ -144,15 +147,15 @@ class Accidents(object):
         # 'fatility': 'X'
         new_results = []
 
-        for data in results: 
-            if data["sic_url"] == 'sic_manual.display?id=&tab=description':
+        for data in results:
+            if data["sic_url"] == "sic_manual.display?id=&tab=description":
                 data["sic_url"] = None
             if data["sic_num"] == "":
                 data["sic_num"] = None
             if data["fatality"] != "X":
                 data["fatality"] = None
             new_results.append(data)
-        return new_results 
+        return new_results
 
     def _get_keywords(self, first_letter):
         if len(first_letter) != 1:
