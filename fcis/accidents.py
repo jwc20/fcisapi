@@ -1,11 +1,15 @@
-
 from .core import *
 
-import urllib.parse
+import unicodedata
+
+def remove_non_printable_ascii(s):
+    return "".join([c if 32 < ord(c) < 127 else None for c in s])
+
 
 def Merge(dict1, dict2):
     res = {**dict1, **dict2}
     return res
+
 
 class Accidents(object):
     def __init__(self, descriptions=[], abstracts=[], keywords=[], *args):
@@ -28,8 +32,10 @@ class Accidents(object):
         # print(not_keyword_list)
         return search_keyword_list
 
-    def _make_accidents_search_url(self, p_start, p_finish, p_sort, p_desc, p_direction,  p_show):
-        
+    def _make_accidents_search_url(
+        self, p_start, p_finish, p_sort, p_desc, p_direction, p_show
+    ):
+
         payload = {}
 
         if self.descriptions:
@@ -48,12 +54,12 @@ class Accidents(object):
 
         if self.keywords:
             # If there are double quotes surrounding the word
-            if len(self.keywords) == 1 and self.keywords[0].find("\"") != -1:
+            if len(self.keywords) == 1 and self.keywords[0].find('"') != -1:
                 existing_keywords = self.keywords
                 payload[ACCIDENT_KEYWORD_LIST_URL] = "on"
             else:
                 existing_keywords = self._get_validated_keywords(self.keywords)
-            
+
             payload[ACCIDENT_KEYWORD_URL] = ""
             for item in existing_keywords:
                 payload[ACCIDENT_KEYWORD_URL] += item + " "
@@ -83,66 +89,21 @@ class Accidents(object):
         html = r.text
         return BeautifulSoup(html, "lxml")
 
-    # def _load_accidents_search_page_by_keyword(self, p_start=None, p_finish=None, p_sort=None, p_desc=None, p_direction=None, p_show=None):
-    #     # print(self._get_validated_keywords(self.keywords))
-    #     # print(is_accident_search(r.url))
-    #     # if len(
-    #     #     self._get_validated_keywords(self.keywords)
-    #     # ) == 1 and not is_accident_search(r.url):
-        
-    #     payload_keyword = {} 
-
-    #     keyword_url = self._get_validated_keywords(self.keywords)[0]
-    #     # print(url)
-        
-        
-    #     # # TODO: use urlencode or urllib.parse
-    #     # search_url = (
-    #     #     BASE_URL
-    #     #     + ACCIDENT_SEARCH_URL
-    #     #     + "?"
-    #     #     + ACCIDENT_KEYWORD_URL
-    #     #     + "="
-    #     #     + '"'
-    #     #     + keyword_url
-    #     #     + '"'
-    #     #     + ACCIDENT_KEYWORD_LIST_URL
-    #     # )
-    #     # print(search_url)
-    #     # payload_str = urlencode(
-    #     #     self._make_accidents_search_url(p_start, p_finish, p_sort, p_desc, p_direction, p_show), safe=""
-    #     # )
-        
-    #     search_url = BASE_URL + ACCIDENT_SEARCH_URL
-        
-    #     payload_keyword[ACCIDENT_KEYWORD_URL] = keyword_url
-    #     payload_keyword[ACCIDENT_KEYWORD_LIST_URL] = "on"
-        
-    #     # payload_str = urlencode(
-    #     #     self._make_accidents_search_url(p_start, p_finish, p_sort, p_desc, p_direction, p_show), safe=""
-    #     # )
-        
-    #     payload_str = self._make_accidents_search_url(p_start, p_finish, p_sort, p_desc, p_direction, p_show)
-        
-        
-        
-    #     payload = Merge(payload_str, payload_keyword)
-        
-    #     print(payload)
-        
-    #     r = requests.get(search_url, params=payload, headers=HEADERS)
-    #     print(r.url)
-    #     html = r.text
-    #     # print(html)
-    #     return BeautifulSoup(html, "lxml")
-    
-
-
-
-    def _load_accidents_search_page(self, p_start=None, p_finish=None, p_sort=None, p_desc=None, p_direction=None, p_show=None):
+    def _load_accidents_search_page(
+        self,
+        p_start=None,
+        p_finish=None,
+        p_sort=None,
+        p_desc=None,
+        p_direction=None,
+        p_show=None,
+    ):
         search_url = BASE_URL + ACCIDENT_SEARCH_URL
         payload_str = urlencode(
-            self._make_accidents_search_url(p_start, p_finish, p_sort, p_desc, p_direction, p_show), safe="+"
+            self._make_accidents_search_url(
+                p_start, p_finish, p_sort, p_desc, p_direction, p_show
+            ),
+            safe="+",
         )
         # print(payload_str)
 
@@ -164,69 +125,50 @@ class Accidents(object):
             pass
 
     def _scrape_accidents_search_results(self, soup_data):
-        """
-        Number of results
-        Summary Nr
-        Event Date
-        Report ID
-        Fat
-        SIC
-        Event Description
-        """
 
-        if not soup_data:
-            return
+        results = []
+        # data = {}
+        table = soup_data.find_all(
+            "table", {"class": "table table-bordered table-striped"}
+        )[1]
+        # print(table)
+        table_rows = table.find_all("tr")
 
-        else:
-
+        for tr in table_rows[1:]:
             data = {
                 "accident_id": None,
                 "summary_url": None,
                 "summary_nr": None,
                 "event_date": None,
                 "report_id": None,
-                "fatality": None,
+                "fatality": "",
                 "sic_url": None,
                 "sic_num": None,
                 "event_description": None,
             }
-            results = []
-            # data = {}
-            table = soup_data.find_all(
-                "table", {"class": "table table-bordered table-striped"}
-            )[1]
-            # print(table)
-            table_rows = table.find_all("tr")
+            data["accident_id"] = tr.find_all("td")[0].input.get("value")
+            data["summary_url"] = (
+                BASE_URL + "/pls/imis/" + tr.find_all("td")[2].a.get("href")
+            )
+            data["summary_nr"] = tr.find_all("td")[2].a.text
+            data["event_date"] = tr.find_all("td")[3].text
+            data["report_id"] = tr.find_all("td")[4].text
+            data["fatility"] = tr.find_all("td")[5].text
+            data["sic_num"] = tr.find_all("td")[6].text
+            data["sic_url"] = (
+                BASE_URL + SIC_DETAILS_URL + "/" + tr.find_all("td")[6].text
+            )
+            data["event_description"] = tr.find_all("td")[7].text
+            # print(data)
+            results.append(data)
 
-            for tr in table_rows[1:]:
-                data["accident_id"] = tr.find_all("td")[0].input.get("value")
-                data["summary_url"] = (
-                    BASE_URL + "/pls/imis/" + tr.find_all("td")[2].a.get("href")
-                )
-                data["summary_nr"] = tr.find_all("td")[2].a.text
-                data["event_date"] = tr.find_all("td")[3].text
-                data["report_id"] = tr.find_all("td")[4].text
-                data["fatility"] = tr.find_all("td")[5].text
-                # data["sic_url"] = tr.find_all("td")[6].a.get("href")
-                data["sic_num"] = tr.find_all("td")[6].text
-                data["sic_url"] = (
-                    BASE_URL + SIC_DETAILS_URL + "/" + tr.find_all("td")[6].text
-                )
-                data["event_description"] = tr.find_all("td")[7].text
-                results.append(data)
-
-            return self._transform_accidents_search_results(results)
+        return self._transform_accidents_search_results(results)
 
     # arguments can be id, url,
     def _scrape_accident_details(self):
         return
 
     def _transform_accidents_search_results(self, results):
-        # clean some scraped results
-        # Examples:
-        # 'sic_url': 'sic_manual.display?id=&tab=description',
-        # 'sic_num': ''
-        # 'fatility': 'X'
         new_results = []
 
         # TODO: maybe use regular expressions here
@@ -238,9 +180,15 @@ class Accidents(object):
                 data["sic_url"] = None
             if data["sic_num"] == "":
                 data["sic_num"] = None
+ 
+            
+            # TODO: /xa0 not utf-8, fix this later.
             if data["fatality"] != "X":
+                # data["fatality"].replace(u'\xa0', u'')
                 data["fatality"] = None
             new_results.append(data)
+            # print(data)
+            # print(data)
         return new_results
 
     def _get_keywords(self, first_letter):
