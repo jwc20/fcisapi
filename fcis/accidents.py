@@ -88,7 +88,7 @@ class Accidents(object):
         SIC
         Event Description
         """
-        '''
+        """
         data = {
             "accident_id": None,
             "summary_url": None,
@@ -96,25 +96,32 @@ class Accidents(object):
             "event_date": None,
             "report_id": None,
             "fatality": None,
+            "sic_url"
             "sic_num": None,
             "event_description": None,
         }
-        '''
+        """
+        results = []
         data = {}
-        table = soup_data.find_all("table", {"class": "table table-bordered table-striped"})[1]
+        table = soup_data.find_all(
+            "table", {"class": "table table-bordered table-striped"}
+        )[1]
         # print(table)
         table_rows = table.find_all("tr")
 
         for tr in table_rows[1:]:
-            print(tr)
-            # table_data = tr.find_all("td")
-            # for td in Vtable_data:
-            # data["accident_id"] = tr.find("td", {"value"}).text 
-            # data["summary_url"] = tr.find("td", {})
-            data["accident_id"] = tr.find_all("td")[1]
+            data["accident_id"] = tr.find_all("td")[0].input.get("value")
+            data["summary_url"] = tr.find_all("td")[2].a.get("href")
+            data["summary_nr"] = tr.find_all("td")[2].a.text
+            data["event_date"] = tr.find_all("td")[3].text
+            data["report_id"] = tr.find_all("td")[4].text
+            data["fatility"] = tr.find_all("td")[5].text
+            data["sic_url"] = tr.find_all("td")[6].a.get("href")
+            data["sic_num"] = tr.find_all("td")[6].text
+            data["event_description"] = tr.find_all("td")[7].text
+            results.append(data)
 
-
-        return data
+        return results
 
     def _extract_accidents_1(self):
         return
