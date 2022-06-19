@@ -2,6 +2,7 @@ from .core import *
 
 import urllib.parse
 
+
 class Accidents(object):
     def __init__(self, descriptions=[], abstracts=[], keywords=[], *args):
         self.descriptions = descriptions
@@ -53,8 +54,6 @@ class Accidents(object):
 
         if _range:
             payload[PAGE_SHOW_URL] = _range
-        
-        
 
         return payload
 
@@ -63,14 +62,13 @@ class Accidents(object):
         For loading the list of keywords page by letters.
         """
         # print(first_letter)
-        search_url = BASE_URL + ACCIDENT_KEYWORD_LETTER_URL 
+        search_url = BASE_URL + ACCIDENT_KEYWORD_LETTER_URL
         r = requests.get(search_url + "=" + first_letter, headers=HEADERS)
         # print(r.url)
         html = r.text
         return BeautifulSoup(html, "lxml")
 
     def _load_accidents_search_page(self, starting_at=None, _range=None):
-        
 
         search_url = BASE_URL + ACCIDENT_SEARCH_URL
 
@@ -85,7 +83,6 @@ class Accidents(object):
             headers=HEADERS,
         )
         # print(r.url)
-        
 
         # If there is only one keyword and the site form can not fetch, go to the list of keywords and fetch from there.
         if is_accident_search(r.url):
@@ -93,19 +90,30 @@ class Accidents(object):
             return BeautifulSoup(html, "lxml")
         # print(self._get_validated_keywords(self.keywords))
         # print(is_accident_search(r.url))
-        if len(self._get_validated_keywords(self.keywords)) == 1 and not is_accident_search(r.url):
+        if len(
+            self._get_validated_keywords(self.keywords)
+        ) == 1 and not is_accident_search(r.url):
             keyword_search_url = BASE_URL + ACCIDENT_SEARCH_URL
-            keyword_url = self._get_validated_keywords(self.keywords)[0].replace(" ", "%20")
+            keyword_url = self._get_validated_keywords(self.keywords)[0].replace(
+                " ", "%20"
+            )
             # print(keyword_url)
-            keyword_payload_str = keyword_search_url + "?"   + ACCIDENT_KEYWORD_URL + "=" + '"' + keyword_url + '"' + ACCIDENT_KEYWORD_LIST_URL
+            keyword_payload_str = (
+                keyword_search_url
+                + "?"
+                + ACCIDENT_KEYWORD_URL
+                + "="
+                + '"'
+                + keyword_url
+                + '"'
+                + ACCIDENT_KEYWORD_LIST_URL
+            )
             print(keyword_payload_str)
             keyword_r = requests.get(keyword_payload_str, headers=HEADERS)
             keyword_html = keyword_r.text
             # print(keyword_html)
             return BeautifulSoup(keyword_html, "lxml")
-        
-        
-        
+
         else:
             print("Your search did not return any result.")
             pass
@@ -147,13 +155,14 @@ class Accidents(object):
 
             for tr in table_rows[1:]:
                 data["accident_id"] = tr.find_all("td")[0].input.get("value")
-                data["summary_url"] = tr.find_all("td")[2].a.get("href")
+                data["summary_url"] = BASE_URL + "/pls/imis/" + tr.find_all("td")[2].a.get("href")
                 data["summary_nr"] = tr.find_all("td")[2].a.text
                 data["event_date"] = tr.find_all("td")[3].text
                 data["report_id"] = tr.find_all("td")[4].text
                 data["fatility"] = tr.find_all("td")[5].text
-                data["sic_url"] = tr.find_all("td")[6].a.get("href")
+                # data["sic_url"] = tr.find_all("td")[6].a.get("href")
                 data["sic_num"] = tr.find_all("td")[6].text
+                data["sic_url"] = BASE_URL + SIC_DETAILS_URL + "/" + tr.find_all("td")[6].text
                 data["event_description"] = tr.find_all("td")[7].text
                 results.append(data)
 
@@ -163,7 +172,6 @@ class Accidents(object):
     def _scrape_accident_details(self):
         return
 
-
     def _transform_accidents_search_results(self, results):
         # clean some scraped results
         # Examples:
@@ -172,8 +180,9 @@ class Accidents(object):
         # 'fatility': 'X'
         new_results = []
 
+        # TODO: maybe use regular expressions here 
         for data in results:
-            if data["sic_url"] == "sic_manual.display?id=&tab=description":
+            if data["sic_url"] == "sic_manual.display?id=&tab=description" or data["sic_url"] == "https://www.osha.gov/sic-manual/":
                 data["sic_url"] = None
             if data["sic_num"] == "":
                 data["sic_num"] = None
