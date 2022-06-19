@@ -17,6 +17,7 @@ ACCIDENT_SEARCH_URL = "/pls/imis/AccidentSearch.search"
 ACCIDENT_DESCRIPTION_URL = "acc_description"
 ACCIDENT_ABSTRACT_URL = "acc_Abstract"
 ACCIDENT_KEYWORD_URL = "acc_keyword"
+ACCIDENT_KEYWORD_LIST_URL = "&keyword_list=on"
 
 ACCIDENT_KEYWORD_LETTER_URL = (
     "/pls/imis/accidentsearch.display_keyword?v_keywordletter"
