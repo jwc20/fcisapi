@@ -68,16 +68,19 @@ class Accidents(object):
         payload_str = urlencode(
             self._make_accidents_search_url(starting_at, _range), safe="+"
         )
-        print(payload_str)
+        # print(payload_str)
 
         r = requests.get(
             search_url,
             params=payload_str,
             headers=HEADERS,
         )
+        print(r.url)
 
-        html = r.text
-        return BeautifulSoup(html, "lxml")
+        if is_accident_search(r.url):
+            html = r.text
+            return BeautifulSoup(html, "lxml")
+
 
     def _scrape_accidents_search_results(self, soup_data):
         """
@@ -89,40 +92,43 @@ class Accidents(object):
         SIC
         Event Description
         """
-        
 
-        data = {
-            "accident_id": None,
-            "summary_url": None,
-            "summary_nr": None,
-            "event_date": None,
-            "report_id": None,
-            "fatality": None,
-            "sic_url": None,
-            "sic_num": None,
-            "event_description": None,
-        }
-        results = []
-        # data = {}
-        table = soup_data.find_all(
-            "table", {"class": "table table-bordered table-striped"}
-        )[1]
-        # print(table)
-        table_rows = table.find_all("tr")
+        if not soup_data:
+            print("Your search did not return any result.")
 
-        for tr in table_rows[1:]:
-            data["accident_id"] = tr.find_all("td")[0].input.get("value")
-            data["summary_url"] = tr.find_all("td")[2].a.get("href")
-            data["summary_nr"] = tr.find_all("td")[2].a.text
-            data["event_date"] = tr.find_all("td")[3].text
-            data["report_id"] = tr.find_all("td")[4].text
-            data["fatility"] = tr.find_all("td")[5].text
-            data["sic_url"] = tr.find_all("td")[6].a.get("href")
-            data["sic_num"] = tr.find_all("td")[6].text
-            data["event_description"] = tr.find_all("td")[7].text
-            results.append(data)
+        else:        
+            data = {
+                "accident_id": None,
+                "summary_url": None,
+                "summary_nr": None,
+                "event_date": None,
+                "report_id": None,
+                "fatality": None,
+                "sic_url": None,
+                "sic_num": None,
+                "event_description": None,
+            }
+            results = []
+            # data = {}
+            table = soup_data.find_all(
+                "table", {"class": "table table-bordered table-striped"}
+            )[1]
+            # print(table)
+            table_rows = table.find_all("tr")
 
-        return self._transform_accidents_search_results(results)
+            for tr in table_rows[1:]:
+                data["accident_id"] = tr.find_all("td")[0].input.get("value")
+                data["summary_url"] = tr.find_all("td")[2].a.get("href")
+                data["summary_nr"] = tr.find_all("td")[2].a.text
+                data["event_date"] = tr.find_all("td")[3].text
+                data["report_id"] = tr.find_all("td")[4].text
+                data["fatility"] = tr.find_all("td")[5].text
+                data["sic_url"] = tr.find_all("td")[6].a.get("href")
+                data["sic_num"] = tr.find_all("td")[6].text
+                data["event_description"] = tr.find_all("td")[7].text
+                results.append(data)
+
+            return self._transform_accidents_search_results(results)
 
     def _extract_accidents_1(self):
         return
