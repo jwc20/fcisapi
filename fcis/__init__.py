@@ -1,17 +1,11 @@
 from .core import *
 from .accidents import Accidents  # Search Accident Results
-from .accident_detail import AccidentDetail  # Accident Details
-from .inspection_detail import InspectionDetail  # Inspection Details
-from .sic import SIC  # Standard Industrial Classification
 
 
 # Fatalities and Catastrophies Investigation Summaries
-class FCIS(Accidents, AccidentDetail, InspectionDetail, SIC):
+class FCIS(Accidents):
     def __init__(self, descriptions=[], abstracts=[], keywords=[], *args, **kwargs):
         Accidents.__init__(self, descriptions, abstracts, keywords, *args, **kwargs)
-        AccidentDetail.__init__(self, *args)
-        InspectionDetail.__init__(self, *args)
-        SIC.__init__(self, keywords=keywords, *args)
 
 
 __author__ = ["Jae W. Choi"]
