@@ -206,7 +206,6 @@ class Accidents(object):
                 keyword_list.append(a_href.text.lower())
             return keyword_list
 
-
     def _make_accident_details_url(self, ids, url=None):  # url
         # TODO: need to do url
         if url:
@@ -398,25 +397,24 @@ class Accidents(object):
             details.append(data)
         return data
 
+    # TODO: get inspection details
 
+    def get_accidents(
+        self,
+        p_start=None,
+        p_finish=None,
+        p_sort=None,
+        p_desc=None,
+        p_direction=None,
+        p_show=None,
+    ):
+        results_data = self._scrape_accidents_search_results(
+            self._load_accidents_search_page(
+                p_start, p_finish, p_sort, p_desc, p_direction, p_show
+            )
+        )
+        return results_data
 
-
-
-
-
-
-
-    #TODO: get inspection details
-
-
-
-
-
-
-
-    def get_accidents(self):
-        return
-
-
-    def get_accident_details(self, ids, url):
-        return
+    def get_accident_details(self, ids=None, url=None):
+        details_data = self._scrape_accident_details(self._load_accident_details_page(ids, url))
+        return details_data
