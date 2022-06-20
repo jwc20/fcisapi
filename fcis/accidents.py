@@ -86,7 +86,7 @@ class Accidents(object):
 
         return payload
 
-    def _load_accidents_keywords_page(self, first_letter): #None 
+    def _load_accidents_keywords_page(self, first_letter):  # None
         """
         For loading the list of keywords page by letters.
         """
@@ -173,7 +173,6 @@ class Accidents(object):
         return self._transform_accidents_search_results(results)
 
     # arguments can be id, url,
-   
 
     def _transform_accidents_search_results(self, results):
         new_results = []
@@ -207,16 +206,13 @@ class Accidents(object):
                 keyword_list.append(a_href.text.lower())
             return keyword_list
 
-
     def get_accidents(self):
         return
 
-
-    
-    def _make_accident_details_url(self, ids, url=None): # url
+    def _make_accident_details_url(self, ids, url=None):  # url
         # TODO: need to do url
         if url:
-            return 
+            return
         else:
             payload = {}
             search_url = BASE_URL + ACCIDENT_DETAILS_URL
@@ -228,15 +224,12 @@ class Accidents(object):
                     search_url += "&" + ID_URL + "=" + details_id
         return search_url
 
-
-    def _load_accident_details_page(self, ids=None, url=None): # ids is a list
+    def _load_accident_details_page(self, ids=None, url=None):  # ids is a list
         details_url = self._make_accident_details_url(ids, url)
         # print(details_url)
         r = requests.get(details_url, headers=HEADERS)
         html = r.text
         return BeautifulSoup(html, "lxml")
-
-
 
     def _scrape_accident_details(self, soup_data):
         details = []
@@ -261,14 +254,29 @@ class Accidents(object):
             nature
             occupation
         }
-        
         """
+
         main_container = soup_data.find("div", {"id": "maincontain"})
 
         for div_table in main_container.find_all("div", {"class": "table-responsive"}):
-            print(div_table)
-
-        return
+            # print(div_table)
+            data = {
+                "accident_number": None,
+                # "event_description": None,
+                "report_id": None,
+                "event_date": None,
+                "inpection_number": None,
+                "open_date": None,
+                "sic_number": None,
+                "establishment_name": None,
+                "detail_description": None,
+                "keywords": None,
+            }
+            data["accident_number"] = div_table.find("div", {"class": "text-center"}).text.split("--")[0].strip().split(":")[1].strip()
+            data["report_id"] = div_table.find("div", {"class": "text-center"}).text.split("--")[1].strip().split(":")[1].strip()
+            data["event_date"] = div_table.find("div", {"class": "text-center"}).text.split("--")[2].strip().split(":")[1].strip()
+            details.append(data)
+        return details
 
     def get_accident_details(self, ids, irl):
         return
