@@ -86,7 +86,7 @@ class Accidents(object):
 
         return payload
 
-    def _load_accidents_keywords_page(self, first_letter):
+    def _load_accidents_keywords_page(self, first_letter): #None 
         """
         For loading the list of keywords page by letters.
         """
@@ -236,5 +236,33 @@ class Accidents(object):
     def get_accidents(self):
         return
 
-    def get_accident_details(self):
+    def _make_accident_details_url(self, ids, url=None): # url
+        if url:
+            return 
+        else:
+            payload = {}
+            search_url = BASE_URL + ACCIDENT_DETAILS_URL
+            if ids:
+                for details_id in ids:
+                    payload["id"] += details_id + " "
+                payload["id"] = payload["id"].strip()
+            else:
+                print("Please put id")
+                return
+            
+        return payload
+
+
+    def _load_accident_details_page(self, ids=None, url=None): # ids is a list
+        main_container = soup_data.find("div", {"id": "maincontain"})
+
+        for div_table in main_container.find_all("div", {"class": "table-responsive"}):
+            print(div_table)
+        return
+
+    def _scrape_accident_details(self, soup_data):
+        return
+
+
+    def get_accident_details(self, ids, irl):
         return
