@@ -173,33 +173,7 @@ class Accidents(object):
         return self._transform_accidents_search_results(results)
 
     # arguments can be id, url,
-    def _scrape_accident_details(self, soup_data):
-        details = []
-        """
-        accident_number
-        event_description
-        report_id
-        event_date
-        inpection_number 
-        open_date
-        sic_number 
-        establishment_name
-        detail_description
-        keywords
-        
-        employee = {
-            employee_number
-            inpection_number
-            age
-            sex
-            degree
-            nature
-            occupation
-        }
-        
-        """
-
-        return
+   
 
     def _transform_accidents_search_results(self, results):
         new_results = []
@@ -233,36 +207,68 @@ class Accidents(object):
                 keyword_list.append(a_href.text.lower())
             return keyword_list
 
+
     def get_accidents(self):
         return
 
+
+    
     def _make_accident_details_url(self, ids, url=None): # url
+        # TODO: need to do url
         if url:
             return 
         else:
             payload = {}
             search_url = BASE_URL + ACCIDENT_DETAILS_URL
-            if ids:
-                for details_id in ids:
-                    payload["id"] += details_id + " "
-                payload["id"] = payload["id"].strip()
+            if len(ids) == 1:
+                search_url += "?" + ID_URL + "=" + ids[0]
             else:
-                print("Please put id")
-                return
-            
-        return payload
+                search_url += "?" + ID_URL + "=" + ids[0]
+                for details_id in ids[1:]:
+                    search_url += "&" + ID_URL + "=" + details_id
+        return search_url
 
 
     def _load_accident_details_page(self, ids=None, url=None): # ids is a list
+        details_url = self._make_accident_details_url(ids, url)
+        # print(details_url)
+        r = requests.get(details_url, headers=HEADERS)
+        html = r.text
+        return BeautifulSoup(html, "lxml")
+
+
+
+    def _scrape_accident_details(self, soup_data):
+        details = []
+        """
+        accident_number
+        event_description
+        report_id
+        event_date
+        inpection_number 
+        open_date
+        sic_number 
+        establishment_name
+        detail_description
+        keywords
+        
+        employee = {
+            employee_number
+            inpection_number
+            age
+            sex
+            degree
+            nature
+            occupation
+        }
+        
+        """
         main_container = soup_data.find("div", {"id": "maincontain"})
 
         for div_table in main_container.find_all("div", {"class": "table-responsive"}):
             print(div_table)
-        return
 
-    def _scrape_accident_details(self, soup_data):
         return
-
 
     def get_accident_details(self, ids, irl):
         return
