@@ -1,7 +1,5 @@
 # fcis-api
 
-# Development Branch
-
 A scraper API for Fatality and Catastrophe Investigation Summaries
 
 ## How to use
