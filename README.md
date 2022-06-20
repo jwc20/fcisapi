@@ -2,7 +2,17 @@
 
 A scraper API for Fatality and Catastrophe Investigation Summaries
 
-## How to use
+
+## Installation 
+To install, you can clone the project:
+```
+git clone git@github.com:jwc20/fcis-api.git
+cd fcis-api
+pip install -r requirements.txt
+```
+
+
+## Usage
 
 ### Create client for searching accident reports
 
