@@ -86,7 +86,7 @@ class Accidents(object):
 
         return payload
 
-    def _load_accidents_keywords_page(self, first_letter): #None 
+    def _load_accidents_keywords_page(self, first_letter):  # None
         """
         For loading the list of keywords page by letters.
         """
@@ -173,33 +173,6 @@ class Accidents(object):
         return self._transform_accidents_search_results(results)
 
     # arguments can be id, url,
-    def _scrape_accident_details(self, soup_data):
-        details = []
-        """
-        accident_number
-        event_description
-        report_id
-        event_date
-        inpection_number 
-        open_date
-        sic_number 
-        establishment_name
-        detail_description
-        keywords
-        
-        employee = {
-            employee_number
-            inpection_number
-            age
-            sex
-            degree
-            nature
-            occupation
-        }
-        
-        """
-
-        return
 
     def _transform_accidents_search_results(self, results):
         new_results = []
@@ -233,36 +206,215 @@ class Accidents(object):
                 keyword_list.append(a_href.text.lower())
             return keyword_list
 
-    def get_accidents(self):
-        return
-
-    def _make_accident_details_url(self, ids, url=None): # url
+    def _make_accident_details_url(self, ids, url=None):  # url
+        # TODO: need to do url
         if url:
-            return 
+            return
         else:
             payload = {}
             search_url = BASE_URL + ACCIDENT_DETAILS_URL
-            if ids:
-                for details_id in ids:
-                    payload["id"] += details_id + " "
-                payload["id"] = payload["id"].strip()
+            if len(ids) == 1:
+                search_url += "?" + ID_URL + "=" + ids[0]
             else:
-                print("Please put id")
-                return
-            
-        return payload
+                search_url += "?" + ID_URL + "=" + ids[0]
+                for details_id in ids[1:]:
+                    search_url += "&" + ID_URL + "=" + details_id
+        return search_url
 
+    def _load_accident_details_page(self, ids=None, url=None):  # ids is a list
+        details_url = self._make_accident_details_url(ids, url)
+        # print(details_url)
+        r = requests.get(details_url, headers=HEADERS)
+        html = r.text
+        return BeautifulSoup(html, "lxml")
 
-    def _load_accident_details_page(self, ids=None, url=None): # ids is a list
+    def _scrape_accident_details(self, soup_data):
+        # TODO: need to do this for multiple ids.
+        details = []
         main_container = soup_data.find("div", {"id": "maincontain"})
 
         for div_table in main_container.find_all("div", {"class": "table-responsive"}):
-            print(div_table)
-        return
+            # print(div_table)
+            data = {
+                "accident_number": None,
+                # "event_description": None,
+                "report_id": None,
+                "event_date": None,
+                "inspection_url": None,
+                "inspection_number": None,
+                "open_date": None,
+                "sic_number": None,
+                "establishment_name": None,
+                "detail_description": None,
+                "keywords": [],
+                "Employee": [],
+            }
+            # End Use	Proj Type	Proj Cost	Stories	NonBldgHt	Fatality
+            # Employee #	Inspection	Age	Sex	Degree	Nature	Occupation
+            data["accident_number"] = (
+                div_table.find("div", {"class": "text-center"})
+                .text.split("--")[0]
+                .strip()
+                .split(":")[1]
+                .strip()
+            )
+            data["report_id"] = (
+                div_table.find("div", {"class": "text-center"})
+                .text.split("--")[1]
+                .strip()
+                .split(":")[1]
+                .strip()
+            )
+            data["event_date"] = (
+                div_table.find("div", {"class": "text-center"})
+                .text.split("--")[2]
+                .strip()
+                .split(":")[1]
+                .strip()
+            )
+            data["inspection_url"] = (
+                div_table.find_all("tr")[2].find_all("td")[0].a.get("href")
+            )
+            data["inspection_number"] = (
+                div_table.find_all("tr")[2].find_all("td")[0].text
+            )
+            data["open_date"] = div_table.find_all("tr")[2].find_all("td")[1].text
+            data["sic_number"] = div_table.find_all("tr")[2].find_all("td")[2].text
+            data["establishment_name"] = (
+                div_table.find_all("tr")[2].find_all("td")[3].text
+            )
+            data["detail_description"] = div_table.find_all("tr")[3].text.strip()
+            # keywords = div_table.find_all("tr")[4].text.split(":")[1].strip().split(",")
+            for keyword in (
+                div_table.find_all("tr")[4].text.split(":")[1].strip().split(",")
+            ):
+                data["keywords"].append(keyword)
 
-    def _scrape_accident_details(self, soup_data):
-        return
+            # if div_table.find_all("tr")[5].find("th").text ==  :
+            # print(div_table.find_all("tr")[6:])
 
+            # employees = []
+            # print(div_table.find_all("tr")[6].previous_sibling.previous_sibling.find_all("th")[0].text)
 
-    def get_accident_details(self, ids, irl):
-        return
+            # TODO: End Use	Proj Type	Proj Cost	Stories	NonBldgHt	Fatality
+            # https://www.osha.gov/pls/imis/accidentsearch.accident_detail?id=570341&id=116803.015&id=171061435
+            # if div_table.find_all("tr")[6].previous_sibling.previous_sibling.find_all("th")[0].text != "Employee #":
+            #     print(div_table.find_all("tr")[6].previous_sibling.previous_sibling.find_all("th")[0].text)
+            #     for table_row in div_table.find_all("tr")[6:]:
+            #         data[div_table.find_all("tr")[6].previous_sibling.previous_sibling.find_all("th")[0].text]  = table_row.find_all("td")
+
+            # TODO: BRUTE FORCING, find better solution later
+            if (
+                div_table.find_all("tr")[6]
+                .previous_sibling.previous_sibling.find_all("th")[0]
+                .text
+                == "Employee #"
+            ):
+
+                for table_row in div_table.find_all("tr")[6:]:
+                    emp = {}
+                    # print(table_row.previous_sibling.previous_sibling.find_all("th"))
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[0]
+                        .text
+                    ] = table_row.find_all("td")[0].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[1]
+                        .text
+                    ] = table_row.find_all("td")[1].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[2]
+                        .text
+                    ] = table_row.find_all("td")[2].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[3]
+                        .text
+                    ] = table_row.find_all("td")[3].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[4]
+                        .text
+                    ] = table_row.find_all("td")[4].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[5]
+                        .text
+                    ] = table_row.find_all("td")[5].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[6]
+                        .text
+                    ] = table_row.find_all("td")[6].text
+                    emp[
+                        div_table.find_all("tr")[6]
+                        .previous_sibling.previous_sibling.find_all("th")[7]
+                        .text
+                    ] = table_row.find_all("td")[7].text
+
+                    data["Employee"].append(emp)
+
+            else:
+                for table_row in div_table.find_all("tr")[8:]:
+                    emp = {}
+                    # print(table_row.previous_sibling.previous_sibling.find_all("th"))
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[0]
+                        .text
+                    ] = table_row.find_all("td")[0].text
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[1]
+                        .text
+                    ] = table_row.find_all("td")[1].text
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[2]
+                        .text
+                    ] = table_row.find_all("td")[2].text
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[3]
+                        .text
+                    ] = table_row.find_all("td")[3].text
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[4]
+                        .text
+                    ] = table_row.find_all("td")[4].text
+                    emp[
+                        div_table.find_all("tr")[8]
+                        .previous_sibling.previous_sibling.find_all("th")[5]
+                        .text
+                    ] = table_row.find_all("td")[5].text
+
+                    data["Employee"].append(emp)
+
+            details.append(data)
+        return data
+
+    # TODO: get inspection details
+
+    def get_accidents(
+        self,
+        p_start=None,
+        p_finish=None,
+        p_sort=None,
+        p_desc=None,
+        p_direction=None,
+        p_show=None,
+    ):
+        results_data = self._scrape_accidents_search_results(
+            self._load_accidents_search_page(
+                p_start, p_finish, p_sort, p_desc, p_direction, p_show
+            )
+        )
+        return results_data
+
+    def get_accident_details(self, ids=None, url=None):
+        details_data = self._scrape_accident_details(self._load_accident_details_page(ids, url))
+        return details_data
