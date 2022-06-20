@@ -2,53 +2,102 @@
 
 # Development Branch
 
-Unofficial API for Fatality and Catastrophe Investigation Summaries
+A scraper API for Fatality and Catastrophe Investigation Summaries
+
+## How to use
+
+### Create client for searching accident reports
+
+You can use description, abstract, and keyword words to search the reports.
+Note that "abstract" served the same purpose as "description" for older reports.
+
+```
+import fcis
+
+desc = ["employee"]
+abst = ["employee"]
+keyw = ["fire"]
+
+client = fcis.FCIS(description=desc, keywords=keyw)
+```
+
+### Scrape accident reports
+
+```
+client.get_accidents(p_show=100)
+```
+
+And you will get:
+
+```
+[{'accident_id': '141245.015',
+  'summary_url': 'https://www.osha.gov/pls/imis/accidentsearch.accident_detail?id=141245.015',
+  'summary_nr': '141245.01',
+  'event_date': '11/17/2021',
+  'report_id': '0213900',
+  'fatality': None,
+  'sic_url': None,
+  'sic_number': None,
+  'event_description': 'Employee Is Killed After Falling Through Elevator Shaft',
+  'fatility': 'X'},
+  ...
+```
+
+### Create client for getting details
+
+```
+import fcis
+client = fcis.FCIS()
+```
+
+### Scrape accident details
+
+You can use use the id of the accident details (found in searching the results) to get the details.
+
+```
+client.get_accident_details(ids=["171061435"])
+```
+
+To get:
+
+```
+{'accident_number': '570341',
+ 'report_id': '0522300',
+ 'event_date': '08/15/1984',
+ 'inspection_url': 'establishment.inspection_detail?id=1667450',
+ 'inspection_number': '1667450',
+ 'open_date': '08/16/1984',
+ 'sic_number': '4741',
+ 'establishment_name': 'Mobile Tank Car Services',
+ 'detail_description': 'THREE EMPLOYEES WERE CLEANING A RAILROAD TANK CAR CONTAINING RESIDUES OF COAL TAR LIGHT OIL, A FLAMMABLE LIQUID. ONE WAS ON TOP OF THE CAR, THE OTHER TWO WERE INSIDE. THEY WERE USING STEEL SHOVELS AND A NON EXPLOSION-PROOF LIGHT INSIDE THE CAR. THE VAPORS IGNITED, KILLING THE TWO EMPLOYEES INSIDE AND BURNING THE ONE ON TOP. THE OTHER EMPLOYEES WERE INJURED IN THE RESCUE ATTEMPT.',
+ 'keywords': ['burn',
+  ' coal tar light oil',
+  ' flammable vapors',
+  ' railroad tank car',
+  ' cleaning',
+  ' explosion'],
+ 'Employee': [{'Employee #': '1',
+   'Inspection': '1667450',
+   'Age': '',
+   'Sex': '',
+   'Degree': 'Fatality',
+   'Nature': 'Asphyxia',
+   'Occupation': 'Occupation not reported',
+   '': ''},
+  {'Employee #': '2',
+   'Inspection': '1667450',
+   'Age': '',
+   'Sex': '',
+   'Degree': 'Fatality',
+   'Nature': 'Asphyxia',
+   'Occupation': 'Occupation not reported',
+   '': ''},
+  ...
+}
+```
+
+### Links
+
+[Accident Search](https://www.osha.gov/pls/imis/accidentsearch.html)
 
 [Accident Investigation Search Help](https://www.osha.gov/help/accident-investigation)
-
-Note: Abstract was used as Description for older reports.
-
-## Information:
-
-### Search Results:
-
-- Summary Nr. - Provides a unique identifier for the accident. By clicking this link, specific information for this accident will be displayed
-- Event Date - the date the accident occurred
-- Report ID - Identifies the OSHA office or organizational unit responsible for the accident investigation
-- Fat - Indicates whether there was a fatality involved in the accident. An X indicated that there was a facility
-- SIC - Indicates the 4-digit Standard Industrial Classification Code from the 1987 version SIC manual which most closely applies. By clicking on this link, the SIC description is displayed
-- Event Description - A description of the accident
-
-### Accident Details:
-
-- Inspection - Provides a unique identifier for the accident. Clicking on this link will display the inspection Detail page.
-- Open Date - the date the accident occurred
-- SIC - Indicates the 4-digit Standard Industrial Classification Code from the 1987 version SIC manual which most closely applies. By clicking on this link, the SIC description is displayed
-- Name of the employer.compant
-- A detail description of the accident event
-- Keywords - The keywords that identify the accident
-- End Use - Identifies final use of the project if applicable
-- Proj Type - Identifies the type of project
-- Proj Cost - The cost of the project
-- Stories - Identifies the number of stories the building contains if applicable
-- Fatality - Indicates whether there was a fatality involved in the accident. An X indicated that there was a facility
-- Age - Age of the person(s) involved in the accident
-- Sex - The gender of those involved in the accident
-- Degree - The degree of injury to those involved in the accident
-- Nature - A brief description of the injuries sustained by those involved in the accident
-- Construction - Detail of the accident including the fall distance, fall height, cause of the accident, and the cause of the fatality if applicable.
-
-### Inspection Details:
-
-- Report ID - Provides a unique identifier for the report.
-- Open Date - the date the accident occurred
-- Address of the accident site
-- SIC - Indicates the 4-digit Standard Industrial Classification Code from the 1987 version SIC manual which most closely applies. By clicking on this link, the SIC description is displayed
-- Inspection type - The type of inspection performed
-- Scope - Scope the investigation
-- Ownership - Type of ownership
-- Safety/Health - Indicates whether the inspection was safety or health related
-- Emphasis - Emphasis of the investigation
-- Advance notice - Indicates if the investigation was planned in advance
-- Close Conference - Date the investigation was closed
-- Close Case - Date the investigation was closed
