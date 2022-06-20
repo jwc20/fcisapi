@@ -8,7 +8,7 @@ To install, you can clone the project:
 ```
 git clone git@github.com:jwc20/fcis-api.git
 cd fcis-api
-pip install -r requirements.txt
+pip install -r requirement.txt
 ```
 
 
