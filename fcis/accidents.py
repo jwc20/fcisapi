@@ -265,16 +265,34 @@ class Accidents(object):
                 # "event_description": None,
                 "report_id": None,
                 "event_date": None,
-                "inpection_number": None,
+                "inspection_url": None,
+                "inspection_number": None,
                 "open_date": None,
                 "sic_number": None,
                 "establishment_name": None,
                 "detail_description": None,
-                "keywords": None,
+                "keywords": [],
             }
+            # End Use	Proj Type	Proj Cost	Stories	NonBldgHt	Fatality
+            # Employee #	Inspection	Age	Sex	Degree	Nature	Occupation	
             data["accident_number"] = div_table.find("div", {"class": "text-center"}).text.split("--")[0].strip().split(":")[1].strip()
             data["report_id"] = div_table.find("div", {"class": "text-center"}).text.split("--")[1].strip().split(":")[1].strip()
             data["event_date"] = div_table.find("div", {"class": "text-center"}).text.split("--")[2].strip().split(":")[1].strip()
+            data["inspection_url"] = div_table.find_all("tr")[2].find_all("td")[0].a.get("href")
+            data["inspection_number"] = div_table.find_all("tr")[2].find_all("td")[0].text
+            data["open_date"] = div_table.find_all("tr")[2].find_all("td")[1].text
+            data["sic_number"] = div_table.find_all("tr")[2].find_all("td")[2].text
+            data["establishment_name"] = div_table.find_all("tr")[2].find_all("td")[3].text
+            data["detail_description"] = div_table.find_all("tr")[3].text.strip()
+            # keywords = div_table.find_all("tr")[4].text.split(":")[1].strip().split(",")
+            for keyword in  div_table.find_all("tr")[4].text.split(":")[1].strip().split(","):
+                data["keywords"].append(keyword)
+            
+            
+            
+            
+            
+            
             details.append(data)
         return details
 
