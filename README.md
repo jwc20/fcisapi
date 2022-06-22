@@ -64,7 +64,7 @@ client = fcis.FCIS()
 You can use use the id of the accident details (found in searching the results) to get the details.
 
 ```
-details = client.get_accident_details(ids=["171061435"])
+details = client.get_accident_details(ids=["570341"])
 print(details)
 ```
 
