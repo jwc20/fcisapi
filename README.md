@@ -16,7 +16,7 @@ pip install -r requirement.txt
 
 ### Create client for searching accident reports
 
-You can use description, abstract, and keyword words to search the reports.
+You can use description, abstract, and keyword words to search the reports.\
 Note that "abstract" served the same purpose as "description" for older reports.
 
 ```
@@ -31,12 +31,13 @@ client = fcis.FCIS(descriptions=desc, keywords=keyw)
 
 ### Scrape accident reports
 
+To search workplace accident report, type:
 ```
 reports = client.get_accidents(p_show=100)
 print(reports)
 ```
 
-And you will get:
+and you will get:
 
 ```
 [{'accident_id': '141245.015',
@@ -54,6 +55,7 @@ And you will get:
 
 ### Create client for getting details
 
+To get details of individual report, type:
 ```
 import fcis
 client = fcis.FCIS()
@@ -105,6 +107,11 @@ To get:
   ...
 }
 ```
+
+### Requirements:
+- beautifulsoup4
+- lxml
+- requests
 
 ### Links
 
