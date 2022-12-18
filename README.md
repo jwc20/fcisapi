@@ -2,7 +2,17 @@
 
 A scraper API for Fatality and Catastrophe Investigation Summaries
 
-## How to use
+
+## Installation 
+To install, you can clone the project:
+```
+git clone git@github.com:jwc20/fcis-api.git
+cd fcis-api
+pip install -r requirement.txt
+```
+
+
+## Usage
 
 ### Create client for searching accident reports
 
@@ -16,13 +26,14 @@ desc = ["employee"]
 abst = ["employee"]
 keyw = ["fire"]
 
-client = fcis.FCIS(description=desc, keywords=keyw)
+client = fcis.FCIS(descriptions=desc, keywords=keyw)
 ```
 
 ### Scrape accident reports
 
 ```
-client.get_accidents(p_show=100)
+reports = client.get_accidents(p_show=100)
+print(reports)
 ```
 
 And you will get:
@@ -53,7 +64,8 @@ client = fcis.FCIS()
 You can use use the id of the accident details (found in searching the results) to get the details.
 
 ```
-client.get_accident_details(ids=["171061435"])
+details = client.get_accident_details(ids=["570341"])
+print(details)
 ```
 
 To get:
