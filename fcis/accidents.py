@@ -113,7 +113,7 @@ class Accidents(object):
             ),
             safe="+",
         )
-        # print(payload_str)
+        print(payload_str)
 
         r = requests.get(
             search_url,
@@ -121,11 +121,13 @@ class Accidents(object):
             headers=HEADERS,
         )
         # print(r.url)
+        # breakpoint()
 
         # If there is only one keyword and the site form can not fetch, go to the list of keywords and fetch from there.
         if is_accident_search(r.url):
             print(r.url)
-            html = r.text
+            html = r.content
+            # print(html)
             return BeautifulSoup(html, "lxml")
 
         else:
@@ -136,6 +138,9 @@ class Accidents(object):
 
         results = []
         # data = {}
+        
+        # breakpoint()
+        
         table = soup_data.find_all(
             "table", {"class": "table table-bordered table-striped"}
         )[1]
@@ -219,6 +224,7 @@ class Accidents(object):
                 search_url += "?" + ID_URL + "=" + ids[0]
                 for details_id in ids[1:]:
                     search_url += "&" + ID_URL + "=" + details_id
+        print(search_url)
         return search_url
 
     def _load_accident_details_page(self, ids=None, url=None):  # ids is a list
@@ -251,42 +257,50 @@ class Accidents(object):
             }
             # End Use	Proj Type	Proj Cost	Stories	NonBldgHt	Fatality
             # Employee #	Inspection	Age	Sex	Degree	Nature	Occupation
+            
+            accident_overview = div_table.find("table", {"class": "tablei_100 table-borderedi_100 table-striped"})
+            
             data["accident_number"] = (
-                div_table.find("div", {"class": "text-center"})
+                accident_overview
                 .text.split("--")[0]
                 .strip()
                 .split(":")[1]
                 .strip()
             )
+         
             data["report_id"] = (
-                div_table.find("div", {"class": "text-center"})
+                accident_overview
                 .text.split("--")[1]
                 .strip()
                 .split(":")[1]
                 .strip()
             )
             data["event_date"] = (
-                div_table.find("div", {"class": "text-center"})
+                accident_overview
                 .text.split("--")[2]
                 .strip()
                 .split(":")[1]
                 .strip()
             )
+            
+            
             data["inspection_url"] = (
-                div_table.find_all("tr")[2].find_all("td")[0].a.get("href")
+                div_table.find_all("tr")[3].find_all("td")[0].a.get("href")
             )
             data["inspection_number"] = (
-                div_table.find_all("tr")[2].find_all("td")[0].text
+                div_table.find_all("tr")[3].find_all("td")[0].text
             )
-            data["open_date"] = div_table.find_all("tr")[2].find_all("td")[1].text
-            data["sic_number"] = div_table.find_all("tr")[2].find_all("td")[2].text
+            data["open_date"] = div_table.find_all("tr")[3].find_all("td")[1].text
+            data["sic_number"] = div_table.find_all("tr")[3].find_all("td")[2].text
             data["establishment_name"] = (
-                div_table.find_all("tr")[2].find_all("td")[3].text
+                div_table.find_all("tr")[3].find_all("td")[3].text
             )
             data["detail_description"] = div_table.find_all("tr")[3].text.strip()
+            
             # keywords = div_table.find_all("tr")[4].text.split(":")[1].strip().split(",")
+            # breakpoint()
             for keyword in (
-                div_table.find_all("tr")[4].text.split(":")[1].strip().split(",")
+                div_table.find("div", "text-center").text.split(":")[1].strip().split(",")
             ):
                 data["keywords"].append(keyword)
 
@@ -304,56 +318,56 @@ class Accidents(object):
             #         data[div_table.find_all("tr")[6].previous_sibling.previous_sibling.find_all("th")[0].text]  = table_row.find_all("td")
 
             # TODO: BRUTE FORCING, find better solution later
+            # breakpoint()
             if (
-                div_table.find_all("tr")[6]
-                .previous_sibling.previous_sibling.find_all("th")[0]
-                .text
+                div_table.find_all("tr")[3].previous_sibling.previous_sibling.find_all("th")[0].text
                 == "Employee #"
             ):
+                for table_row in div_table.find_all("tr")[3:]:
+                    # breakpoint()
 
-                for table_row in div_table.find_all("tr")[6:]:
                     emp = {}
                     # print(table_row.previous_sibling.previous_sibling.find_all("th"))
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[0]
                         .text
                     ] = table_row.find_all("td")[0].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[1]
                         .text
                     ] = table_row.find_all("td")[1].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[2]
                         .text
                     ] = table_row.find_all("td")[2].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[3]
                         .text
                     ] = table_row.find_all("td")[3].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[4]
                         .text
                     ] = table_row.find_all("td")[4].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[5]
                         .text
                     ] = table_row.find_all("td")[5].text
                     emp[
-                        div_table.find_all("tr")[6]
+                        div_table.find_all("tr")[3]
                         .previous_sibling.previous_sibling.find_all("th")[6]
                         .text
                     ] = table_row.find_all("td")[6].text
-                    emp[
-                        div_table.find_all("tr")[6]
-                        .previous_sibling.previous_sibling.find_all("th")[7]
-                        .text
-                    ] = table_row.find_all("td")[7].text
+                    # emp[
+                    #     div_table.find_all("tr")[3]
+                    #     .previous_sibling.previous_sibling.find_all("th")[7]
+                    #     .text
+                    # ] = table_row.find_all("td")[7].text
 
                     data["Employee"].append(emp)
 
