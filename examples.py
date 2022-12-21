@@ -1,12 +1,12 @@
 import fcis
 from pprintpp import pprint
 
-desc = ["employee"]
+desc = ["covid-19"]
 abst = ["employee"]
-keyw = ["fire"]
+keyw = [""]
 
 # Search for accident reports
-client = fcis.FCIS(descriptions=desc, keywords=keyw)
+client = fcis.FCIS(descriptions=desc)
 reports = client.get_accidents(p_show=100)
 pprint(reports)
 

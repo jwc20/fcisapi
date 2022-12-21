@@ -166,7 +166,7 @@ class Accidents(object):
             data["summary_nr"] = tr.find_all("td")[2].a.text
             data["event_date"] = tr.find_all("td")[3].text
             data["report_id"] = tr.find_all("td")[4].text
-            data["fatility"] = tr.find_all("td")[5].text
+            data["fatality"] = tr.find_all("td")[5].text
             data["sic_number"] = tr.find_all("td")[6].text
             data["sic_url"] = (
                 BASE_URL + SIC_DETAILS_URL + "/" + tr.find_all("td")[6].text
