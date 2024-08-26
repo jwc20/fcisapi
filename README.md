@@ -1,5 +1,9 @@
 # fcis-api
 
+**Update: osha.org is blocking traffic from scrapers.**
+
+**TODO: Use splash headless browser and/or implement proxy to circumvent block.**
+
 A scraper API for Fatality and Catastrophe Investigation Summaries
 
 
